@@ -35,8 +35,6 @@ class Label:
         for i, l in enumerate(limg):
             img.paste(l,(int(i*h),0))
 
-        img.save("/tmp/test.png")
-
         return img
 
 # print("".join(f"{x:08b}".replace("0", " ") for x in bytes(i)))
