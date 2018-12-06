@@ -13,71 +13,29 @@ def _coord_add(tup1, tup2):
 
 
 class Label:
-    """Base class for all labels
-
-    >>> class MyLabel(Label):
-    ...     items = [
-    ...         Text(), Text()
-    ...     ]
-    >>> l = MyLabel("text1", "text2")
-    >>> printer.print(l)
-
-    """
-    items = []  # type: list
-
-    def __init__(self, *args):
+    def __init__(self, *items):
+        self.items = items
         if not self.items:
             raise ValueError(
                 "A Labels 'items' attribute must contain a list of "
                 "renderable objects")
 
-        arg_it = iter(args)
-        try:
-            self._rendered_items = [
-                [item.render(next(arg_it)) for item in line]
-                for line in self.items]
-        except StopIteration:
-            # the argument list was exhausted before all items had a value
-            raise TypeError("{cls} requires {argc} arguments, but {num} were given".format(
-                cls=self.__class__.__name__, argc=sum(len(x) for x in self.items), num=len(args)
-            ))
-
-    @property
-    def size(self) -> Tuple[int, int]:
-        width = max(sum(i.size[0] for i in line)
-                    for line in self._rendered_items)
-        height = sum(max(i.size[1] for i in line)
-                     for line in self._rendered_items)
-
-        return width, height
-
-    def render(self, width=None, height=None) -> Image:
+    def render(self, height) -> Image:
         """render the Label.
 
         Args:
-            width: Width request
             height: Height request
         """
-        size = self.size
-        img = Image.new("1", size, "white")
 
-        pos = [0, 0]
+        h = height/len(self.items)
+        limg = [ item.render(h) for item in self.items ]
+        width = max([ img.size[1] for img in limg ])
 
-        for line in self._rendered_items:
-            for item in line:
-                box = (*pos, *_coord_add(item.size, pos))
-                img.paste(item, box=box)
-                pos[0] += item.size[0]
+        img = Image.new("1", (height, width), "white")
+        for i, l in enumerate(limg):
+            img.paste(l,(int(i*h),0))
 
-            pos[0] = 0
-            pos[1] += max(i.size[1] for i in line)
-
-        xdim, ydim = img.size
-        print("presize", xdim, ydim, height)
-        xdim = round((height / ydim) * xdim)
-
-        print("calcsize", xdim, ydim)
-        img = img.resize((xdim, height))
+        img.save("/tmp/test.png")
 
         return img
 
