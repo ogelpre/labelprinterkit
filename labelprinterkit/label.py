@@ -7,11 +7,6 @@ from typing import Tuple
 from PIL import Image
 
 
-def _coord_add(tup1, tup2):
-    """add two tuples of size two"""
-    return (tup1[0] + tup2[0], tup1[1] + tup2[1])
-
-
 class Label:
     def __init__(self, *items):
         self.items = items
@@ -37,4 +32,17 @@ class Label:
 
         return img
 
-# print("".join(f"{x:08b}".replace("0", " ") for x in bytes(i)))
+
+class ImageLabel:
+    def __init__(self, path):
+        self.path = path
+
+    def render(self, height):
+        image = Image.open(self.path)
+        ow, oh = image.size
+        w = int(ow*oh/128)
+        resimg =  image.resize((w,128))
+        img = Image.new("1", (w, 128), "white")
+        img.paste(resimg)
+
+        return img
