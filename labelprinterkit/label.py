@@ -28,7 +28,7 @@ class Label:
 
         img = Image.new("1", (width, height), "white")
         for i, l in enumerate(limg):
-            img.paste(l,(int(i*h),0))
+            img.paste(l, (0, int(i*h)))
 
         return img
 
