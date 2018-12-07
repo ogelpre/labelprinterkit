@@ -29,9 +29,9 @@ class Label:
 
         h = height/len(self.items)
         limg = [ item.render(h) for item in self.items ]
-        width = max([ img.size[1] for img in limg ])
+        width = max([ img.size[0] for img in limg ])
 
-        img = Image.new("1", (height, width), "white")
+        img = Image.new("1", (width, height), "white")
         for i, l in enumerate(limg):
             img.paste(l,(int(i*h),0))
 

@@ -7,7 +7,7 @@ from math import ceil
 
 class Text:
     """A simple text item"""
-    def __init__(self, text, font_path='arial.ttf', **kwargs) -> None:
+    def __init__(self, text, font_path='comic.ttf', **kwargs) -> None:
         self.text = text
         self.font_path = font_path
 
@@ -35,14 +35,14 @@ class Text:
         upper = 1
         while True:
             font = ImageFont.truetype(self.font_path, upper)
-            if font.getsize(self.text)[0] >= height:
+            if font.getsize(self.text)[1] >= height:
                 break
             lower = upper
             upper *= 2
         while True:
             test = ceil((upper+lower)/2)
             font = ImageFont.truetype(self.font_path, test)
-            font_height = font.getsize(self.text)[0]
+            font_height = font.getsize(self.text)[1]
             if upper - lower <= 1:
                 return lower
             elif font_height > height:
