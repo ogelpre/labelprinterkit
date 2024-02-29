@@ -1,8 +1,12 @@
 from __future__ import annotations
+
 import socket
+from typing import Type
+
+from ..commands.BaseCommand import BaseCommand
 
 try:
-    from pysnmp.hlapi import SnmpEngine, getCmd, UdpTransportTarget, Udp6TransportTarget,\
+    from pysnmp.hlapi import SnmpEngine, getCmd, UdpTransportTarget, Udp6TransportTarget, \
         ContextData, ObjectType, ObjectIdentity, CommunityData
 except ImportError:
     SnmpEngine = None
@@ -14,7 +18,7 @@ except ImportError:
     ObjectIdentity = None
     CommunityData = None
 
-from . import UniDirectionalBackend
+from . import UniDirectionalBackend, Command
 
 
 class TCPBackend(UniDirectionalBackend):
@@ -34,7 +38,9 @@ class TCPBackend(UniDirectionalBackend):
                 raise ConnectionError(f"Connection to {host} failed.")
         self._sock = sock
 
-    def write(self, data: bytes) -> None:
+    def write(self, data: bytes | Type[Command]):
+        if issubclass(type(data), BaseCommand):
+            data = data.to_bytes()
         sent = self._sock.send(data)
         if sent == 0:
             raise IOError("Socket connection broken")
@@ -62,7 +68,7 @@ class NetworkBackend(TCPBackend):
             transport,
             ContextData(),
             ObjectType(ObjectIdentity('.1.3.6.1.4.1.2435.3.3.9.1.6.1.0'))
-            )
+        )
 
         error_indication, _, _, variables = next(iterator)
         if error_indication:

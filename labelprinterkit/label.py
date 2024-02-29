@@ -1,10 +1,12 @@
 from __future__ import annotations
+
 from abc import ABC, abstractmethod
 from logging import getLogger
 from math import ceil
 from typing import TypeVar, NamedTuple, Optional
 
 from PIL import Image, ImageChops, ImageDraw, ImageFont
+
 try:
     from qrcode import QRCode as _QRCode
     from qrcode.constants import ERROR_CORRECT_L, ERROR_CORRECT_M, ERROR_CORRECT_H, ERROR_CORRECT_Q
@@ -92,7 +94,7 @@ class Text(Item):
             lower = upper
             upper *= 2
         while True:
-            test = ceil((upper+lower)/2)
+            test = ceil((upper + lower) / 2)
             font = ImageFont.truetype(self.font_path, test)
             image = Image.new("1", font.getsize(self.text), "white")
             draw = ImageDraw.Draw(image)
@@ -204,17 +206,17 @@ class Flag(BasePage):
     def __init__(self, item1: ItemType, item2: ItemType, spacing=265):
         rendered_images = [item1.render(), item2.render()]
         image_max_length = max([rendered_image.size[0] for rendered_image in rendered_images])
-        length = 2*image_max_length + spacing
+        length = 2 * image_max_length + spacing
         height = max([rendered_image.size[1] for rendered_image in rendered_images])
 
         line_length = 2 + spacing % 2
         data = 0x0
-        for i in range(height-1):
+        for i in range(height - 1):
             data <<= 1
             if not i % 8:
                 data |= 0x01
-        b_len = round(height/8)
-        data <<= b_len*8 - height
+        b_len = round(height / 8)
+        data <<= b_len * 8 - height
         bitmap = line_length * data.to_bytes(b_len, byteorder='big')
         line_image = bitmap_to_image(bitmap, height, line_length)
 

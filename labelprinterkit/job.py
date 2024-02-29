@@ -1,11 +1,14 @@
 from __future__ import annotations
+
+from .constants import Media, Resolution, PRINTHEAD_MEDIA_ALIGNMENT
 from .page import PageType
-from .constants import Media, Resolution
+from typing import Type, TypeVar, NewType
 
 
 class Job:
     def __init__(self,
                  media: Media,
+                 printer: PrinterType,
                  auto_cut: bool = True,
                  mirror_printing: bool = False,
                  half_cut: bool = False,
@@ -16,6 +19,12 @@ class Job:
                  ):
 
         self.media = media
+        self.printer = printer
+
+        try:
+            self.print_area = PRINTHEAD_MEDIA_ALIGNMENT[(self.printer._PRINT_HEAD_HEIGHT, self.media)].print_area
+        except KeyError:
+            raise ValueError(f"Printer {self.printer} does not support media {self.media}")
 
         self.auto_cut = auto_cut
         self.mirror_printing = mirror_printing
@@ -36,8 +45,7 @@ class Job:
         return len(self._pages)
 
     def add_page(self, page: PageType):
-        width = self.media.value.printarea
-        if page.width != width:
+        if page.width != self.print_area:
             raise RuntimeError('Page width does not match media width')
         if page.resolution != self.resolution:
             raise RuntimeError('Page resolution does not match media resolution')
@@ -48,3 +56,8 @@ class Job:
         if page.length < min_length:
             raise RuntimeError('Page is not long enough')
         self._pages.append(page)
+
+
+from .printers.GenericPrinter import GenericPrinter
+
+PrinterType = NewType('PrinterType', GenericPrinter)

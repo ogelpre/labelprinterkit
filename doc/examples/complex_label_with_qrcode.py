@@ -12,10 +12,10 @@
 # First let's import all the needed Classes
 
 from labelprinterkit.backends.network import TCPBackend
-from labelprinterkit.printers import P750W
-from labelprinterkit.label import Label, Box, Text, QRCode, Padding
-from labelprinterkit.job import Job
 from labelprinterkit.constants import Media
+from labelprinterkit.job import Job
+from labelprinterkit.label import Label, Box, Text, QRCode, Padding
+from labelprinterkit.printers.P750W import P750W
 
 # The label will be created for a 12mm band. The 12mm has 70 pixel/points width.
 # So let's create a QR code with 70 pixels width.
@@ -42,7 +42,7 @@ label = Label(full_box)
 label.image.save('/tmp/label.png')
 
 # Create job with configuration and add label as page
-job = Job(Media.W12)
+job = Job(Media.TZE_12)
 job.add_page(label)
 
 # Use TCP backend to connect to printer

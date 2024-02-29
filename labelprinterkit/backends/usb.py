@@ -1,10 +1,12 @@
 from __future__ import annotations
+
 from time import sleep
+from typing import Type
 
 import usb.core
 import usb.util
 
-from . import BaseBackend
+from . import BaseBackend, Command
 
 
 class PyUSBBackend(BaseBackend):
@@ -23,7 +25,9 @@ class PyUSBBackend(BaseBackend):
                 return True
         return False
 
-    def write(self, data: bytes):
+    def write(self, data: bytes | Type[Command]):
+        if isinstance(data, Command):
+            data = data.to_bytes()
         self._dev.write(0x2, data)
 
     def read(self, count: int) -> bytes | None:

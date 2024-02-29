@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+from typing import Type
+
 try:
     import serial
 except ImportError:
     serial = None
-from . import BiDirectionalBackend
+from . import BiDirectionalBackend, Command
 
 
 class BTSerialBackend(BiDirectionalBackend):
@@ -24,7 +26,9 @@ class BTSerialBackend(BiDirectionalBackend):
             raise OSError('Device not found')
         self._dev = dev
 
-    def write(self, data: bytes):
+    def write(self, data: bytes | Type[Command]):
+        if isinstance(data, Command):
+            data = data.to_bytes()
         self._dev.write(data)
 
     def read(self, count: int) -> bytes:
