@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 from abc import ABC
 from math import ceil
 from typing import TypeVar, Tuple
