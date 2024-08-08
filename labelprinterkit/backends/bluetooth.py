@@ -27,6 +27,6 @@ class BTSerialBackend(BiDirectionalBackend):
     def write(self, data: bytes):
         self._dev.write(data)
 
-    def read(self, count: int) -> bytes:
+    def read(self, count: int, timeout=None) -> bytes:
         data = self._dev.read(count)
         return data
